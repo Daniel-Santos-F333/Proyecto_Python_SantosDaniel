@@ -24,4 +24,20 @@ def mostrarMenu():
     print("4. Generar reporte de gastos")
     print("5. Salir")
     print("=============================================")
+def main():
+    gastos = cargaDeDatos()
+    gastosManager = Gastos(gastos)
+    while True:
+        mostrarMenu()
+        opcion = input("Ingrese su elección: ")
+
+        if opcion == "1":
+            cantidad = float(input("Ingrese la cantidad: "))
+            categoria = input("Ingrese la categoria: " )
+            descripcion = input("Ingrese una descripción (Opcional): ")
+
+gastosManager.calcularTotalGastos(cantidad,categoria,descripciond)
+
+guardarDatos(gastosManager.gastos)
+            
 
