@@ -108,3 +108,4 @@ def calcularPorCategoria(gastos, periodo='total'):
 
 ### Inicializar la lista de gastos al cargar el módulo
 gastosRegistrados = cargarGastos()
+
