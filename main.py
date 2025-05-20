@@ -35,9 +35,3 @@ def main():
             cantidad = float(input("Ingrese la cantidad: "))
             categoria = input("Ingrese la categoria: " )
             descripcion = input("Ingrese una descripción (Opcional): ")
-
-gastosManager.calcularTotalGastos(cantidad,categoria,descripciond)
-
-guardarDatos(gastosManager.gastos)
-            
-
