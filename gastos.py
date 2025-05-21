@@ -1,111 +1,224 @@
 import json
-import os
 from datetime import datetime, timedelta
-
 from tabulate import tabulate
 
-dataDir = "data"
-dataFile = os.path.join(dataDir, "gastos.json")
+archivoGastos = 'gastos.json'
 
 def cargarGastos():
-    ### Carga los gastos desde el archivo json
-    if not os.path.exists(dataDir):
-        os.makedirs(dataDir)
     try:
-        with open(dataFile, "r") as f:
-            return json.load(f)
+        with open(archivoGastos, 'r', encoding='utf-8') as f:
+            contenido = f.read()
+            if contenido:
+                return json.loads(contenido)
+            else:
+                return []
     except FileNotFoundError:
         return []
     except json.JSONDecodeError:
-        print("Error: El archivo de gastos está corrupto. Se iniciará como una lista vaciá.")
-        return[]
-    
+        return []
+
 def guardarGastos(gastos):
-    ### Guarda los gastos en el archivo json
-    with open(dataFile, 'w') as f:
+    with open(archivoGastos, 'w', encoding='utf-8') as f:
         json.dump(gastos, f, indent=4)
 
-def registrarGasto(gastos, cantidad, categoria, descripcion):
-    ### Registra un nuevo gasto con los datos proporcionados
-    fecha = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    nuevoGasto = {
-        "fecha": fecha,
-        "categoria": categoria,
-        "cantidad": cantidad,
-        "descripcion": descripcion
-    }
-    gastos.append(nuevoGasto)
-    guardarGastos(gastos)
-    print("Gasto registrado exitosamente.")
-    return gastos
+def registrarGasto():
+    print("=============================================")
+    print("            Registrar Nuevo Gasto            ")
+    print("=============================================")
+    print("Ingrese la información del gasto:")
 
-def listarGastos(gastos, filtroCategoria=None, filtroFechaInicio=None, filtroFechaFin=None):
-    ### Muestra los gastos registrados, con opciones de filtrado
-    gastosFiltrados = gastos
-    if filtroCategoria:
-        gastosFiltrados = [gasto for gasto in gastosFiltrados if gasto['categoria'].lower() == filtroCategoria.lower()]
-    if filtroFechaInicio:
-        try:
-            fechaInicio = datetime.strptime(filtroFechaInicio, "%Y-%m-%d")
-            gastosFiltrados = [gasto for gasto in gastosFiltrados if datetime.strptime(gasto['fecha'].split()[0], "%Y-%m-%d") >= fechaInicio]
-        except ValueError:
-            print("Formato de fecha de inicio inválido (YYYY-MM-DD).")
-            return
-    if filtroFechaFin:
-        try:
-            fechaFin = datetime.strptime(filtroFechaFin, "%Y-%m-%d")
-            gastosFiltrados = [gasto for gasto in gastosFiltrados if datetime.strptime(gasto['fecha'].split()[0], "%Y-%m-%d") <= fechaFin]
-        except ValueError:
-            print("Formato de fecha de fin inválido (YYYY-MM-DD).")
-            return
-    if gastosFiltrados:
-        headers = ["Fecha", "Categoría", "Cantidad", "Descripción"]
-        tablaGastos = [[gasto['fecha'], gasto['categoria'], f"${gasto['cantidad']:.2f}", gasto['descripcion']] for gasto in gastosFiltrados]
-        print(tabulate(tablaGastos, headers=headers, tablefmt="grid"))
+    montoValido = False
+    while not montoValido:
+        montoStr = input("- Monto del gasto: ")
+        esNumero = True
+        for caracter in montoStr:
+            if not (caracter.isdigit() or caracter == '.'):
+                esNumero = False
+                break
+        if esNumero and montoStr:
+            montoGasto = float(montoStr)
+            if montoGasto <= 0:
+                print("El monto debe ser un número positivo.")
+            else:
+                montoValido = True
+        else:
+            print("Entrada inválida. Por favor, ingrese un número para el monto.")
+
+    categoriaGasto = input("- Categoría (ej. comida, transporte, entretenimiento, otros): ").lower()
+    descripcionGasto = input("- Descripción (opcional): ")
+
+    confirmacion = input("\nIngrese 'S' para guardar o 'C' para cancelar. ").upper()
+    if confirmacion == 'S':
+        fechaGasto = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        nuevoGasto = {
+            "monto": montoGasto,
+            "categoria": categoriaGasto,
+            "descripcion": descripcionGasto,
+            "fecha": fechaGasto
+        }
+        gastosActuales = cargarGastos()
+        gastosActuales.append(nuevoGasto)
+        guardarGastos(gastosActuales)
+        print("\n¡Gasto registrado con éxito!")
     else:
-        print("No se encontraron gastos según los criterios de búsqueda.")
+        print("\nRegistro de gasto cancelado.")
 
-def getSemanaAño(fechaStr):
-    ### Obtiene el año y el número de semana ISO de una fecha
-    fechaDt = datetime.strptime(fechaStr.split()[0], "%Y-%m-%d")
-    return fechaDt.isocalendar()[0], fechaDt.isocalendar()[1]
-
-def calcularTotales(gastos, periodo='diario'):
-    ### Calcula los gastos totales diarios, semanales o mensuales
+def listarGastos(filtroCategoria=None, filtroRangoFechas=None):
+    gastos = cargarGastos()
     if not gastos:
-        return "No hay gastos registrados."
-    
-    totales = {}
-    if periodo == 'diario':
-        for gasto in gastos:
-            fecha = gasto['fecha'].split()[0]
-            totales[fecha] = totales.get(fecha, 0) + gasto['cantidad']
-    elif periodo == 'semanal':
-        for gasto in gastos:
-            año, semana = getSemanaAño(gasto['fecha'])
-            claveSemana = f"{año}-Semana {semana}"
-            totales[claveSemana] = totales.get(claveSemana, 0) + gasto['cantidad']
-    elif periodo == 'mensual':
-        for gasto in gastos:
-            fecha = gasto['fecha'][:7]  # YYYY-MM
-            totales[fecha] = totales.get(fecha, 0) + gasto['cantidad']
-    else:
-        return "Periodo inválido. Use 'diario', 'semanal' o 'mensual'."
+        print("\nNo hay gastos registrados todavía.")
+        return
 
-    return totales
+    print("\n=============================================")
+    print("                Listado de Gastos            ")
+    print("=============================================")
 
-def calcularPorCategoria(gastos, periodo='total'):
-    ### Calcula el gasto acumulado por categoría
-    if not gastos:
-        return "No hay gastos registrados."
+    gastosAMostrar = []
 
-    gastosPorCategoria = {}
     for gasto in gastos:
-        categoria = gasto['categoria']
-        gastosPorCategoria[categoria] = gastosPorCategoria.get(categoria, 0) + gasto['cantidad']
+        mostrar = True
+        if filtroCategoria and gasto['categoria'] != filtroCategoria.lower():
+            mostrar = False
+        if filtroRangoFechas and mostrar:
+            fechaStr = gasto['fecha'].split(' ')[0]
+            fechaGasto = datetime.strptime(fechaStr, "%Y-%m-%d").date()
+            hoy = datetime.now().date()
+            if filtroRangoFechas == 'diario':
+                if fechaGasto != hoy:
+                    mostrar = False
+            elif filtroRangoFechas == 'semanal':
+                haceUnaSemana = hoy - timedelta(days=7)
+                if not (haceUnaSemana <= fechaGasto <= hoy):
+                    mostrar = False
+            elif filtroRangoFechas == 'mensual':
+                if fechaGasto.month != hoy.month or fechaGasto.year != hoy.year:
+                    mostrar = False
+        if mostrar:
+            gastosAMostrar.append([
+                gasto['fecha'],
+                gasto['categoria'].capitalize(),
+                f"{gasto['monto']:.2f}",
+                gasto['descripcion'] if gasto['descripcion'] else "N/A"
+            ])
 
-    return gastosPorCategoria
+    if not gastosAMostrar:
+        print("No se encontraron gastos con los filtros aplicados.")
+        return
 
-### Inicializar la lista de gastos al cargar el módulo
-gastosRegistrados = cargarGastos()
+    print(tabulate(gastosAMostrar, headers=["Fecha", "Categoría", "Monto", "Descripción"], tablefmt="grid"))
 
+def calcularGastos(periodoCalculo=None):
+    gastos = cargarGastos()
+    if not gastos:
+        print("\nNo hay gastos registrados para calcular.")
+        return
+
+    print("\n=============================================")
+    print("          Cálculo Total de Gastos          ")
+    print("=============================================")
+
+    totalGeneral = 0
+    gastosPorCategoria = {}
+    gastosFiltradosPorPeriodo = []
+
+    hoy = datetime.now().date()
+
+    for gasto in gastos:
+        fechaStr = gasto['fecha'].split(' ')[0]
+        fechaGasto = datetime.strptime(fechaStr, "%Y-%m-%d").date()
+        incluirGasto = True
+
+        if periodoCalculo == 'diario':
+            if fechaGasto != hoy:
+                incluirGasto = False
+        elif periodoCalculo == 'semanal':
+            haceUnaSemana = hoy - timedelta(days=7)
+            if not (haceUnaSemana <= fechaGasto <= hoy):
+                incluirGasto = False
+        elif periodoCalculo == 'mensual':
+            if fechaGasto.month != hoy.month or fechaGasto.year != hoy.year:
+                incluirGasto = False
+
+        if incluirGasto:
+            gastosFiltradosPorPeriodo.append(gasto)
+            totalGeneral += gasto['monto']
+            categoria = gasto['categoria'].capitalize()
+            gastosPorCategoria[categoria] = gastosPorCategoria.get(categoria, 0) + gasto['monto']
+
+    if not gastosFiltradosPorPeriodo:
+        print(f"No hay gastos registrados para el periodo '{periodoCalculo}'.")
+        return
+
+    print(f"Total general de gastos para el periodo: ${totalGeneral:.2f}")
+
+    print("\nGastos por categoría en el periodo:")
+    datosTablaCategorias = []
+    for categoria, total in gastosPorCategoria.items():
+        datosTablaCategorias.append([categoria, f"${total:.2f}"])
+
+    print(tabulate(datosTablaCategorias, headers=["Categoría", "Total"], tablefmt="grid"))
+
+def generarReporte(tipoReporte=None):
+    gastos = cargarGastos()
+    if not gastos:
+        print("\nNo hay gastos registrados para generar un reporte.")
+        return
+
+    print("\n=============================================")
+    print("           Generar Reporte de Gastos         ")
+    print("=============================================")
+
+    totalGeneral = 0
+    gastosPorCategoria = {}
+    gastosPorDia = {}
+    gastosFiltradosPorPeriodo = []
+
+    hoy = datetime.now().date()
+
+    for gasto in gastos:
+        fechaStr = gasto['fecha'].split(' ')[0]
+        fechaGasto = datetime.strptime(fechaStr, "%Y-%m-%d").date()
+        incluirGasto = True
+
+        if tipoReporte == 'diario':
+            if fechaGasto != hoy:
+                incluirGasto = False
+        elif tipoReporte == 'semanal':
+            haceUnaSemana = hoy - timedelta(days=7)
+            if not (haceUnaSemana <= fechaGasto <= hoy):
+                incluirGasto = False
+        elif tipoReporte == 'mensual':
+            if fechaGasto.month != hoy.month or fechaGasto.year != hoy.year:
+                incluirGasto = False
+
+        if incluirGasto:
+            gastosFiltradosPorPeriodo.append(gasto)
+            totalGeneral += gasto['monto']
+            categoria = gasto['categoria'].capitalize()
+            gastosPorCategoria[categoria] = gastosPorCategoria.get(categoria, 0) + gasto['monto']
+            fechaCorta = gasto['fecha'].split(' ')[0]
+            gastosPorDia[fechaCorta] = gastosPorDia.get(fechaCorta, 0) + gasto['monto']
+
+    if not gastosFiltradosPorPeriodo:
+        print(f"No hay gastos registrados para el reporte '{tipoReporte}'.")
+        return
+
+    reporteTexto = f"--- REPORTE DE GASTOS ({tipoReporte.upper() if tipoReporte else 'GLOBAL'}) ---\n\n"
+    reporteTexto += f"Total general de gastos: ${totalGeneral:.2f}\n\n"
+
+    reporteTexto += "Gastos por categoría:\n"
+    for categoria, total in gastosPorCategoria.items():
+        reporteTexto += f"- {categoria}: ${total:.2f}\n"
+
+    reporteTexto += "\nGastos por día:\n"
+    for fecha, total in sorted(gastosPorDia.items()):
+        reporteTexto += f"- {fecha}: ${total:.2f}\n"
+
+    print(reporteTexto)
+
+    opcionGuardar = input("¿Deseas guardar este reporte en un archivo de texto? (S/N): ").upper()
+    if opcionGuardar == 'S':
+        nombreArchivo = f"reporte_gastos_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+        with open(nombreArchivo, 'w', encoding='utf-8') as f:
+            f.write(reporteTexto)
+        print(f"Reporte guardado como '{nombreArchivo}'")
