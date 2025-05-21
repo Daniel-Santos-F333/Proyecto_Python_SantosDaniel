@@ -47,7 +47,7 @@ def registrarGasto():
     categoriaGasto = input("- Categoría (ej. comida, transporte, entretenimiento, otros): ").lower()
     descripcionGasto = input("- Descripción (opcional): ")
 
-    confirmacion = input("\nIngrese 'S' para guardar o 'C' para cancelar. ").upper()
+    confirmacion = input("Ingrese 'S' para guardar o 'C' para cancelar. ").upper()
     if confirmacion == 'S':
         fechaGasto = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         nuevoGasto = {
@@ -59,17 +59,17 @@ def registrarGasto():
         gastosActuales = cargarGastos()
         gastosActuales.append(nuevoGasto)
         guardarGastos(gastosActuales)
-        print("\n¡Gasto registrado con éxito!")
+        print("¡Gasto registrado con éxito!")
     else:
-        print("\nRegistro de gasto cancelado.")
+        print("Registro de gasto cancelado.")
 
 def listarGastos(filtroCategoria=None, filtroRangoFechas=None):
     gastos = cargarGastos()
     if not gastos:
-        print("\nNo hay gastos registrados todavía.")
+        print("No hay gastos registrados todavía.")
         return
 
-    print("\n=============================================")
+    print("=============================================")
     print("                Listado de Gastos            ")
     print("=============================================")
 
@@ -110,10 +110,10 @@ def listarGastos(filtroCategoria=None, filtroRangoFechas=None):
 def calcularGastos(periodoCalculo=None):
     gastos = cargarGastos()
     if not gastos:
-        print("\nNo hay gastos registrados para calcular.")
+        print("No hay gastos registrados para calcular.")
         return
 
-    print("\n=============================================")
+    print("=============================================")
     print("          Cálculo Total de Gastos          ")
     print("=============================================")
 
@@ -151,7 +151,7 @@ def calcularGastos(periodoCalculo=None):
 
     print(f"Total general de gastos para el periodo: ${totalGeneral:.2f}")
 
-    print("\nGastos por categoría en el periodo:")
+    print("Gastos por categoría en el periodo:")
     datosTablaCategorias = []
     for categoria, total in gastosPorCategoria.items():
         datosTablaCategorias.append([categoria, f"${total:.2f}"])
@@ -161,10 +161,10 @@ def calcularGastos(periodoCalculo=None):
 def generarReporte(tipoReporte=None):
     gastos = cargarGastos()
     if not gastos:
-        print("\nNo hay gastos registrados para generar un reporte.")
+        print("No hay gastos registrados para generar un reporte.")
         return
 
-    print("\n=============================================")
+    print("=============================================")
     print("           Generar Reporte de Gastos         ")
     print("=============================================")
 
@@ -203,16 +203,14 @@ def generarReporte(tipoReporte=None):
         print(f"No hay gastos registrados para el reporte '{tipoReporte}'.")
         return
 
-    reporteTexto = f"--- REPORTE DE GASTOS ({tipoReporte.upper() if tipoReporte else 'GLOBAL'}) ---\n\n"
-    reporteTexto += f"Total general de gastos: ${totalGeneral:.2f}\n\n"
-
-    reporteTexto += "Gastos por categoría:\n"
+    reporteTexto = f"--- REPORTE DE GASTOS ({tipoReporte.upper() if tipoReporte else 'GLOBAL'}) ---"
+    reporteTexto += f"Total general de gastos: ${totalGeneral:.2f}"
+    reporteTexto += "Gastos por categoría:"
     for categoria, total in gastosPorCategoria.items():
-        reporteTexto += f"- {categoria}: ${total:.2f}\n"
-
-    reporteTexto += "\nGastos por día:\n"
+        reporteTexto += f"- {categoria}: ${total:.2f}"
+    reporteTexto += "Gastos por día:"
     for fecha, total in sorted(gastosPorDia.items()):
-        reporteTexto += f"- {fecha}: ${total:.2f}\n"
+        reporteTexto += f"- {fecha}: ${total:.2f}"
 
     print(reporteTexto)
 
