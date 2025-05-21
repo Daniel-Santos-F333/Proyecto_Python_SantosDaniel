@@ -25,11 +25,11 @@ def registrarGasto():
     print("=============================================")
     print("            Registrar Nuevo Gasto            ")
     print("=============================================")
-    print("Ingrese la información del gasto:")
+    print("\nIngrese la información del gasto:")
 
     montoValido = False
     while not montoValido:
-        montoStr = input("- Monto del gasto: ")
+        montoStr = input("\n- Monto del gasto: ")
         esNumero = True
         for caracter in montoStr:
             if not (caracter.isdigit() or caracter == '.'):
@@ -59,14 +59,15 @@ def registrarGasto():
         gastosActuales = cargarGastos()
         gastosActuales.append(nuevoGasto)
         guardarGastos(gastosActuales)
-        print("¡Gasto registrado con éxito!")
+        print("\n¡Gasto registrado con éxito!")
+        
     else:
-        print("Registro de gasto cancelado.")
+        print("\nRegistro de gasto cancelado.")
 
 def listarGastos(filtroCategoria=None, filtroRangoFechas=None):
     gastos = cargarGastos()
     if not gastos:
-        print("No hay gastos registrados todavía.")
+        print("\nNo hay gastos registrados todavía.")
         return
 
     print("=============================================")
@@ -203,14 +204,14 @@ def generarReporte(tipoReporte=None):
         print(f"No hay gastos registrados para el reporte '{tipoReporte}'.")
         return
 
-    reporteTexto = f"--- REPORTE DE GASTOS ({tipoReporte.upper() if tipoReporte else 'GLOBAL'}) ---"
-    reporteTexto += f"Total general de gastos: ${totalGeneral:.2f}"
-    reporteTexto += "Gastos por categoría:"
+    reporteTexto = f"--- REPORTE DE GASTOS ({tipoReporte.upper() if tipoReporte else 'GLOBAL'}) ---\n"
+    reporteTexto += f"Total general de gastos: ${totalGeneral:.2f}\n"
+    reporteTexto += "Gastos por categoría:\n"
     for categoria, total in gastosPorCategoria.items():
-        reporteTexto += f"- {categoria}: ${total:.2f}"
-    reporteTexto += "Gastos por día:"
+        reporteTexto += f"- {categoria}: ${total:.2f}\n"
+    reporteTexto += "Gastos por día:\n"
     for fecha, total in sorted(gastosPorDia.items()):
-        reporteTexto += f"- {fecha}: ${total:.2f}"
+        reporteTexto += f"- {fecha}: ${total:.2f}\n"
 
     print(reporteTexto)
 

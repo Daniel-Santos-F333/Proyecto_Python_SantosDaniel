@@ -1,23 +1,8 @@
 import sys
-from gastos import (
-    registrarGasto,
-    listarGastos,
-    calcularGastos,
-    generarReporte,
-    cargarGastos,
-    guardarGastos
-)
+from gastos import (registrarGasto, listarGastos, calcularGastos, generarReporte, cargarGastos, guardarGastos)
 
 def limpiarPantallaSimulada():
-    print("" * 50)
-
-def mostrarMensajeBienvenida():
-    print("================================================")
-    print("|      Bienvenido al Simulador de Gasto Diario  |")
-    print("================================================")
-    print("|         Por: Daniel Santos Fajardo            |")
-    print("================================================")
-    
+    print("\n" * 50)
 
 def mostrarMenuPrincipal():
     print("=============================================")
@@ -30,19 +15,22 @@ def mostrarMenuPrincipal():
     print("4. Generar reporte de gastos")
     print("5. Salir")
     print("=============================================")
+
 def main():
-    mostrarMensajeBienvenida()
     cargarGastos()
 
     while True:
+        limpiarPantallaSimulada()
         mostrarMenuPrincipal()
         opcion = input("Elige una opción: ")
 
         if opcion == '1':
+            limpiarPantallaSimulada()
             registrarGasto()
         elif opcion == '2':
             while True:
-                print("=============================================")
+                limpiarPantallaSimulada()
+                print("\n=============================================")
                 print("                Listar Gastos                ")
                 print("=============================================")
                 print("Seleccione una opción para filtrar los gastos:")
@@ -55,23 +43,28 @@ def main():
                 filtroOpcion = input("Elige una opción: ")
 
                 if filtroOpcion == '1':
+                    limpiarPantallaSimulada()
                     listarGastos()
                     break
                 elif filtroOpcion == '2':
                     categoria = input("Introduce la categoría a filtrar: ")
+                    limpiarPantallaSimulada()
                     listarGastos(filtroCategoria=categoria)
                     break
                 elif filtroOpcion == '3':
-                    print("Filtrar por rango de fechas:")
+                    print("\nFiltrar por rango de fechas:")
                     print("  a) Diario (solo hoy)")
                     print("  b) Semanal (últimos 7 días)")
                     print("  c) Mensual (mes actual)")
                     rango = input("Elige un rango (a/b/c): ").lower()
                     if rango == 'a':
+                        limpiarPantallaSimulada()
                         listarGastos(filtroRangoFechas='diario')
                     elif rango == 'b':
+                        limpiarPantallaSimulada()
                         listarGastos(filtroRangoFechas='semanal')
                     elif rango == 'c':
+                        limpiarPantallaSimulada()
                         listarGastos(filtroRangoFechas='mensual')
                     else:
                         print("Opción de filtro de fecha inválida.")
@@ -80,11 +73,12 @@ def main():
                     break
                 else:
                     print("Opción no válida. Por favor, elige un número del 1 al 4.")
-                input("Presiona Enter para continuar...")
+                input("\nPresiona Enter para continuar...")
 
         elif opcion == '3':
+            limpiarPantallaSimulada()
             while True:
-                print("=============================================")
+                print("\n=============================================")
                 print("          Calcular Total de Gastos         ")
                 print("=============================================")
                 print("Seleccione el periodo de cálculo:")
@@ -97,23 +91,27 @@ def main():
                 periodoOpcion = input("Elige una opción: ")
 
                 if periodoOpcion == '1':
+                    limpiarPantallaSimulada()
                     calcularGastos(periodoCalculo='diario')
                     break
                 elif periodoOpcion == '2':
+                    limpiarPantallaSimulada()
                     calcularGastos(periodoCalculo='semanal')
                     break
                 elif periodoOpcion == '3':
+                    limpiarPantallaSimulada()
                     calcularGastos(periodoCalculo='mensual')
                     break
                 elif periodoOpcion == '4':
                     break
                 else:
                     print("Opción no válida. Por favor, elige un número del 1 al 4.")
-                input("Presiona Enter para continuar...")
+                input("\nPresiona Enter para continuar...")
 
         elif opcion == '4':
             while True:
-                print("=============================================")
+                limpiarPantallaSimulada()
+                print("\n=============================================")
                 print("           Generar Reporte de Gastos         ")
                 print("=============================================")
                 print("Seleccione el tipo de reporte:")
@@ -126,29 +124,32 @@ def main():
                 reporteOpcion = input("Elige una opción: ")
 
                 if reporteOpcion == '1':
+                    limpiarPantallaSimulada()
                     generarReporte(tipoReporte='diario')
                     break
                 elif reporteOpcion == '2':
+                    limpiarPantallaSimulada()
                     generarReporte(tipoReporte='semanal')
                     break
                 elif reporteOpcion == '3':
+                    limpiarPantallaSimulada()
                     generarReporte(tipoReporte='mensual')
                     break
                 elif reporteOpcion == '4':
                     break
                 else:
                     print("Opción no válida. Por favor, elige un número del 1 al 4.")
-                input("Presiona Enter para continuar...")
+                input("\nPresiona Enter para continuar...")
 
         elif opcion == '5':
-            confirmarSalida = input("¿Desea salir del programa? (S/N): ").upper()
+            confirmarSalida = input("\n¿Desea salir del programa? (S/N): ").upper()
             if confirmarSalida == 'S':
-                print("¡Gracias por usar su Simulador de Gasto Diario por excelencia!")
+                print("\n¡Gracias por usar su Simulador de Gasto Diario por excelencia!")
                 sys.exit()
         else:
-            print("Opción no válida. Por favor, elige un número del 1 al 5.")
+            print("\nOpción no válida. Por favor, elige un número del 1 al 5.")
 
-        input("Presiona Enter para continuar...")
+        input("\nPresiona Enter para continuar...")
 
 if __name__ == "__main__":
     main()
