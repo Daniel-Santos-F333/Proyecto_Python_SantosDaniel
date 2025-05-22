@@ -56,3 +56,5 @@ Desde la terminal y ubicado en la carpeta del programa escribir el siguiente có
 /user/carpeta/Proyecto_Python_SantosDaniel/: python3 main.py
 ```
 
+#### 6. Link Sustentacion del proyecto
+https://youtu.be/XLVYnxM4b_Q
